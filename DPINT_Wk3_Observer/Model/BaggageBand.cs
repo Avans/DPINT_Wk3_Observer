@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace DPINT_Wk3_Observer.Model
 {
-    public class Baggageband
+    public class Baggageband : Observable<Baggageband>
     {
         public string Naam { get; set; }
         private int _aantalKoffersPerMinuut;
@@ -32,8 +32,10 @@ namespace DPINT_Wk3_Observer.Model
                 _huidigeVluchtTimer.Stop();
             }
 
-            _huidigeVluchtTimer = new Timer();
-            _huidigeVluchtTimer.Interval = (int)((60.0 / _aantalKoffersPerMinuut) * 1000);
+            _huidigeVluchtTimer = new Timer
+            {
+                Interval = (int)((60.0 / _aantalKoffersPerMinuut) * 1000)
+            };
             _huidigeVluchtTimer.Tick += KofferVanBandGehaald;
 
             _huidigeVluchtTimer.Start();
@@ -45,7 +47,7 @@ namespace DPINT_Wk3_Observer.Model
         {
             AantalKoffers--;
 
-            if(AantalKoffers == 0)
+            if (AantalKoffers == 0)
             {
                 VluchtVertrokkenVanuit = null;
                 _huidigeVluchtTimer.Stop();

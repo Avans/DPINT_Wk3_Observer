@@ -81,6 +81,7 @@
     <Compile Include="Model\Aankomsthal.cs" />
     <Compile Include="Model\Baggageband.cs" />
     <Compile Include="Model\Vlucht.cs" />
+    <Compile Include="Observer\Observable.cs" />
     <Compile Include="ViewModel\BaggagebandViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
