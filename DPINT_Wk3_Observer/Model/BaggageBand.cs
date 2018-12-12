@@ -9,12 +9,15 @@ namespace DPINT_Wk3_Observer.Model
 {
     public class Baggageband : Observable<Baggageband>
     {
-        public string Naam { get; set; }
+        public string Naam { get => _naam; set { _naam = value; Notify(this); } }
         private int _aantalKoffersPerMinuut;
-        public int AantalKoffers { get; set; }
-        public string VluchtVertrokkenVanuit { get; set; }
+        public int AantalKoffers { get => _aantalKoffers; set { _aantalKoffers = value; Notify(this); } }
+        public string VluchtVertrokkenVanuit { get => _vluchtVertrokkenVanuit; set { _vluchtVertrokkenVanuit = value; Notify(this); } }
 
         private Timer _huidigeVluchtTimer;
+        private string _vluchtVertrokkenVanuit;
+        private int _aantalKoffers;
+        private string _naam;
 
         public Baggageband(string naam, int aantalKoffersPerMinuut)
         {
@@ -40,7 +43,7 @@ namespace DPINT_Wk3_Observer.Model
 
             _huidigeVluchtTimer.Start();
 
-            // TODO: We moeten het laten weten dat we een update hebben!
+            base.Notify(this);
         }
 
         private void KofferVanBandGehaald(object sender, EventArgs e)
@@ -53,7 +56,7 @@ namespace DPINT_Wk3_Observer.Model
                 _huidigeVluchtTimer.Stop();
             }
 
-            // TODO: We moeten het laten weten dat we een update hebben!
+            base.Notify(this);
         }
     }
 }
