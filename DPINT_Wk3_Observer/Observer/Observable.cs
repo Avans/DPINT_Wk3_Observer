@@ -32,6 +32,7 @@ public abstract class Observable<T> : IObservable<T>, IDisposable
         // Daarna geven we een object terug. 
         // Als dat object gedisposed wordt geven wij 
         // de bovenstaande observer geen seintjes meer.
+        _observers.Add(observer);
         return new Unsubscriber(() => _observers.Remove(observer));
     }
     ///<summary>

@@ -24,9 +24,16 @@ namespace DPINT_Wk3_Observer.Model
             Naam = naam;
             _aantalKoffersPerMinuut = aantalKoffersPerMinuut;
         }
-
+        public bool IsBezigMetVluchtAfhandelen()
+        {
+            return _aantalKoffers > 0;
+        }
         public void HandelNieuweVluchtAf(Vlucht vlucht)
         {
+            if (IsBezigMetVluchtAfhandelen())
+            {
+                throw new InvalidOperationException();
+            }
             VluchtVertrokkenVanuit = vlucht.VertrokkenVanuit;
             AantalKoffers = vlucht.AantalKoffers;
 

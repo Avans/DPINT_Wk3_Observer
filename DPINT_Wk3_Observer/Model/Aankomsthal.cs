@@ -7,23 +7,30 @@ using System.Threading.Tasks;
 
 namespace DPINT_Wk3_Observer.Model
 {
-    public class Aankomsthal
+    public class Aankomsthal : IObserver<Baggageband>
     {
         // TODO: Hier een ObservableCollection van maken, dan weten we wanneer er vluchten bij de wachtrij bij komen of afgaan.
-        public List<Vlucht> WachtendeVluchten { get; private set; }
-        public List<Baggageband> Baggagebanden { get; private set; }
+        public ObservableCollection<Vlucht> WachtendeVluchten { get; private set; }
+        public ObservableCollection<Baggageband> Baggagebanden { get; private set; }
 
         public Aankomsthal()
         {
-            WachtendeVluchten = new List<Vlucht>();
-            Baggagebanden = new List<Baggageband>();
+            WachtendeVluchten = new ObservableCollection<Vlucht>();
+            Baggagebanden = new ObservableCollection<Baggageband>
+            {
+                // TODO: Als baggageband Observable is, gaan we subscriben op band 1 zodat we updates binnenkrijgen.
+                new Baggageband("Band 1", 30),
+                // TODO: Als baggageband Observable is, gaan we subscriben op band 2 zodat we updates binnenkrijgen.
+                new Baggageband("Band 2", 60),
+                // TODO: Als baggageband Observable is, gaan we subscriben op band 3 zodat we updates binnenkrijgen.
+                new Baggageband("Band 3", 90)
+            };
 
-            // TODO: Als baggageband Observable is, gaan we subscriben op band 1 zodat we updates binnenkrijgen.
-            Baggagebanden.Add(new Baggageband("Band 1", 30));
-            // TODO: Als baggageband Observable is, gaan we subscriben op band 2 zodat we updates binnenkrijgen.
-            Baggagebanden.Add(new Baggageband("Band 2", 60));
-            // TODO: Als baggageband Observable is, gaan we subscriben op band 3 zodat we updates binnenkrijgen.
-            Baggagebanden.Add(new Baggageband("Band 3", 90));
+            foreach (var band in Baggagebanden)
+            {
+                band.Subscribe(this);
+                OnNext(band);
+            }
         }
 
         public void NieuweInkomendeVlucht(string vertrokkenVanuit, int aantalKoffers)
@@ -32,23 +39,37 @@ namespace DPINT_Wk3_Observer.Model
             // Dan moet de vlucht meteen naar die band.
 
             // Denk bijvoorbeeld aan: Baggageband legeBand = Baggagebanden.FirstOrDefault(b => b.AantalKoffers == 0);
-
-            WachtendeVluchten.Add(new Vlucht(vertrokkenVanuit, aantalKoffers));
+            Baggageband legeBand = Baggagebanden.FirstOrDefault(b => b.AantalKoffers == 0);
+            if (legeBand != null)
+            {
+                legeBand.HandelNieuweVluchtAf(new Vlucht(vertrokkenVanuit, aantalKoffers));
+            }
+            else
+            {
+                WachtendeVluchten.Add(new Vlucht(vertrokkenVanuit, aantalKoffers));
+            }
         }
 
-        public void WachtendeVluchtenNaarBand()
+        public void OnNext(Baggageband value)
         {
-            while(Baggagebanden.Any(bb => bb.AantalKoffers == 0) && WachtendeVluchten.Any())
+            if (value.AantalKoffers <= 0 && WachtendeVluchten.Count > 0)
             {
-                // TODO: Straks krijgen we een update van een baggageband. Dan hoeven we alleen maar te kijken of hij leeg is.
-                // Als dat zo is kunnen we vrijwel de hele onderstaande code hergebruiken en hebben we geen while meer nodig.
-                
-                Baggageband legeBand = Baggagebanden.FirstOrDefault(bb => bb.AantalKoffers == 0);
+                Baggageband legeBand = value;
                 Vlucht volgendeVlucht = WachtendeVluchten.FirstOrDefault();
                 WachtendeVluchten.RemoveAt(0);
 
                 legeBand.HandelNieuweVluchtAf(volgendeVlucht);
             }
+        }
+
+        public void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnCompleted()
+        {
+            throw new NotImplementedException();
         }
     }
 }
